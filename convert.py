@@ -17,6 +17,7 @@ def get_filename_set(data_set):
         for line in f:
             inner_list = [elt.strip() for elt in line.split(',')]
             labels += inner_list
+    # labels = ['bird', 'fish']
 
     for i, label in enumerate(labels):
         list = os.listdir(FLAGS.data_dir  + '/' + data_set + '/' + label)
@@ -36,8 +37,9 @@ def read_jpeg(filename):
 
 def convert_images(sess, data_set):
     filename_set = get_filename_set(data_set)
-    print('filename', filename_set)
-    '''
+    # data_set = 'eval' or 'train'
+    # [0, './data/train/bird/birdimage.jpg']
+    
     with open('./data/' + data_set + '_data.bin', 'wb') as f:
         for i in range(0, len(filename_set)):
             resized_image = read_jpeg(filename_set[i][1])
@@ -45,16 +47,17 @@ def convert_images(sess, data_set):
             try:
                 image = sess.run(resized_image)
             except Exception as e:
-                print e.message
+                print (e)
                 continue
 
             #plt.imshow(np.reshape(image.data, [FLAGS.raw_height, FLAGS.raw_width, FLAGS.depth]))
             #plt.show()
-
-            print i, filename_set[i][0], image.shape
-            f.write(chr(filename_set[i][0]))
+            
+            # 0, 0, (144, 144, 3)
+            print (i, filename_set[i][0], image.shape)
+            f.write(chr(filename_set[i][0]).encode())
             f.write(image.data)
-    '''
+    
 
 def read_raw_images(sess, data_set):
     filename = ['./data/' + data_set + '_data.bin']
@@ -69,7 +72,7 @@ def read_raw_images(sess, data_set):
 
     for i in range(0, 100):
         result = sess.run(record_bytes)
-        print i, result[0]
+        print (i, result[0])
         image = result[1:len(result)]
 
         #plt.imshow(np.reshape(image, [FLAGS.raw_height, FLAGS.raw_width, FLAGS.depth]))
@@ -77,6 +80,7 @@ def read_raw_images(sess, data_set):
 
 def main(argv = None):
     with tf.Session() as sess:
+        print('----------')
         convert_images(sess, 'train')
         convert_images(sess, 'eval')
         #read_raw_images(sess, 'eval')
